@@ -32,56 +32,64 @@ def populate_db(db_conn):
                     median_grade = course_page_json['data'][0][0]
                     fail_percentage = course_page_json['data'][0][1]
 
-                for x in range(2, 12):
-                    num_students += course_page_json['data'][0][x]
+                num_students = get_num_students_of_course(num_students, course_page_json)
 
-                zero_to_ten = course_page_json['data'][0][2] / num_students * 100
-                ten_to_twenty = course_page_json['data'][0][3] / num_students * 100
-                twenty_to_thirty = course_page_json['data'][0][4] / num_students * 100
-                thirty_to_forty = course_page_json['data'][0][5] / num_students * 100
-                forty_to_fifty = course_page_json['data'][0][6] / num_students * 100
-                fifty_to_sixty = course_page_json['data'][0][7] / num_students * 100
-                sixty_to_seventy = course_page_json['data'][0][8] / num_students * 100
-                seventy_to_eighty = course_page_json['data'][0][9] / num_students * 100
-                eighty_to_ninety = course_page_json['data'][0][10] / num_students * 100
-                ninety_to_hundred = course_page_json['data'][0][11] / num_students * 100
+                d_percentage = course_page_json['data'][0][3] / num_students * 100
+                c_minus_percentage = course_page_json['data'][0][4] / num_students * 100
+                c_percentage = course_page_json['data'][0][5] / num_students * 100
+                c_plus_percentage = course_page_json['data'][0][6] / num_students * 100
+                b_minus_percentage = course_page_json['data'][0][7] / num_students * 100
+                b_percentage = course_page_json['data'][0][8] / num_students * 100
+                b_plus_percentage = course_page_json['data'][0][9] / num_students * 100
+                a_minus_percentage = course_page_json['data'][0][10] / num_students * 100
+                a_percentage = course_page_json['data'][0][11] / num_students * 100
+                a_plus_percentage = course_page_json['data'][0][12] / num_students * 100
 
                 db_conn.cursor().execute(
-                    "INSERT INTO sfu_grades VALUES ('%s', '%s', %.1f, %.1f, %.1f, %.1f, %.1f,"
-                    "%.1f, %.1f, %.1f, %.1f, %.1f, %.1f)"
+                    "INSERT INTO sfu_grades VALUES ('%s', '%s', %.2f, %.2f, %.2f, %.2f, %.2f,"
+                    "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f)"
                     % (course_name,
                        median_grade,
                        fail_percentage,
-                       zero_to_ten,
-                       ten_to_twenty,
-                       twenty_to_thirty,
-                       thirty_to_forty,
-                       forty_to_fifty,
-                       fifty_to_sixty,
-                       sixty_to_seventy,
-                       seventy_to_eighty,
-                       eighty_to_ninety,
-                       ninety_to_hundred))
+                       d_percentage,
+                       c_minus_percentage,
+                       c_percentage,
+                       c_plus_percentage,
+                       b_minus_percentage,
+                       b_percentage,
+                       b_plus_percentage,
+                       a_minus_percentage,
+                       a_percentage,
+                       a_plus_percentage))
                 db_conn.commit()
+
+
+def get_num_students_of_course(num_students, course_page_json):
+    for i in range(2, 13):
+        num_students += course_page_json['data'][0][i]
+
+    return num_students
 
 
 def create_db():
     db_conn = sqlite3.connect('sfu_grades.db')
 
+    db_conn.cursor().execute("DROP TABLE IF EXISTS sfu_grades")
+
     db_conn.cursor().execute("""CREATE TABLE sfu_grades (
         course_name TEXT,
         median_grade TEXT,
         fail_rate DOUBLE,
-        zero_to_ten DOUBLE,
-        ten_to_twenty DOUBLE,
-        twenty_to_thirty DOUBLE,
-        thirty_to_forty DOUBLE,
-        forty_to_fifty DOUBLE,
-        fifty_to_sixty DOUBLE,
-        sixty_to_seventy DOUBLE,
-        seventy_to_eighty DOUBLE,
-        eighty_to_ninety DOUBLE,
-        ninety_to_hundred DOUBLE)""")
+        d_percentage DOUBLE,
+        c_minus_percentage DOUBLE,
+        c_grade_percentage DOUBLE,
+        c_plus_percentage DOUBLE,
+        b_minus_percentage DOUBLE,
+        b_percentage DOUBLE,
+        b_plus_percentage DOUBLE,
+        a_minus_percentage DOUBLE,
+        a_percentage DOUBLE,
+        a_plus_percentage DOUBLE)""")
 
     return db_conn
 
@@ -90,7 +98,7 @@ def main():
     db_conn = create_db()
     populate_db(db_conn)
     db_conn.close()
-    print("Finished")
+    print("Finished Scraping")
 
 
 if __name__ == '__main__':
