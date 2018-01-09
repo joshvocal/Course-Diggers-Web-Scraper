@@ -18,7 +18,7 @@ A step by step series of examples that tell you have to get a development env ru
 
 ```
 git clone https://github.com/joshvocal/SFU-Course-Diggers-Web-Scraper.git
-cd SFU-Course_Diggers-Web-Scraper
+cd SFU-Course-Diggers-Web-Scraper
 python3 scraper.py
 ```
 
