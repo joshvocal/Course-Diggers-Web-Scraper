@@ -2,11 +2,11 @@ import requests
 import sqlite3
 
 COURSE_DIGGER_JSON_URL = "http://www.coursediggers.com/data/{}.json"
-SFU_ID = 3
+SFU_IDS = [3, 4]
 
 
 def populate_db(db_conn):
-    urls = [COURSE_DIGGER_JSON_URL.format(i) for i in range(1, 10376)]
+    urls = [COURSE_DIGGER_JSON_URL.format(i) for i in range(1, 20376)]
 
     for url in urls:
 
@@ -18,7 +18,7 @@ def populate_db(db_conn):
 
             course_page_json = course_page.json()
 
-            if course_page_json['metadata']['dataSource']['id'] == SFU_ID:
+            if course_page_json['metadata']['dataSource']['id'] in SFU_IDS:
 
                 course_name = None
                 median_grade = None
@@ -32,18 +32,29 @@ def populate_db(db_conn):
                     median_grade = course_page_json['data'][0][0]
                     fail_percentage = course_page_json['data'][0][1]
 
-                num_students = get_num_students_of_course(num_students, course_page_json)
+                num_students = get_num_students_of_course(
+                    num_students, course_page_json)
 
-                d_percentage = course_page_json['data'][0][3] / num_students * 100
-                c_minus_percentage = course_page_json['data'][0][4] / num_students * 100
-                c_percentage = course_page_json['data'][0][5] / num_students * 100
-                c_plus_percentage = course_page_json['data'][0][6] / num_students * 100
-                b_minus_percentage = course_page_json['data'][0][7] / num_students * 100
-                b_percentage = course_page_json['data'][0][8] / num_students * 100
-                b_plus_percentage = course_page_json['data'][0][9] / num_students * 100
-                a_minus_percentage = course_page_json['data'][0][10] / num_students * 100
-                a_percentage = course_page_json['data'][0][11] / num_students * 100
-                a_plus_percentage = course_page_json['data'][0][12] / num_students * 100
+                d_percentage = course_page_json['data'][0][3] / \
+                    num_students * 100
+                c_minus_percentage = course_page_json['data'][0][4] / \
+                    num_students * 100
+                c_percentage = course_page_json['data'][0][5] / \
+                    num_students * 100
+                c_plus_percentage = course_page_json['data'][0][6] / \
+                    num_students * 100
+                b_minus_percentage = course_page_json['data'][0][7] / \
+                    num_students * 100
+                b_percentage = course_page_json['data'][0][8] / \
+                    num_students * 100
+                b_plus_percentage = course_page_json['data'][0][9] / \
+                    num_students * 100
+                a_minus_percentage = course_page_json['data'][0][10] / \
+                    num_students * 100
+                a_percentage = course_page_json['data'][0][11] / \
+                    num_students * 100
+                a_plus_percentage = course_page_json['data'][0][12] / \
+                    num_students * 100
 
                 db_conn.cursor().execute(
                     "INSERT INTO sfu_grades VALUES ('%s', '%s', %.2f, %.2f, %.2f, %.2f, %.2f,"
